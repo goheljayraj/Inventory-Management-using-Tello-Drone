@@ -23,7 +23,8 @@ wb.save('Rapidex Inventory.xls')
 
 rb = xlrd.open_workbook('Rapidex Inventory.xls')
 sheet = rb.sheet_by_index(0)
-print(sheet.nrows)
+print(sheet.nrows) 
+#nrows gives the number of rows...  
 
 # For row 0 and column 0
 print(sheet.cell_value(0, 0))
@@ -42,18 +43,17 @@ tello.streamoff()
 tello.streamon()
 # tello.takeoff()
 
+#only for testing purpose
 # tello.move_left(20)
 # time.sleep(2)
 # tello.move_forward(50)
-
 # tello.rotate_counter_clockwise(90)
-
 # tello.land()
 
 # if used reference imagge 2, use known distance  = 35 and known width = 5.0
 #  if used pers image:
-KNOWN_DISTANCE = 60 # inches
-KNOWN_WIDTH = 8.0  # inches
+KNOWN_DISTANCE = 60 # cm
+KNOWN_WIDTH = 8.0  # cm
 
 # define the fonts
 fonts = cv2.FONT_HERSHEY_COMPLEX
@@ -70,22 +70,12 @@ ORANGE = (0, 165, 230)
 
 cap = cv2.VideoCapture(0)
 cap.set(3, 640)
-cap.set(4, 408)
+cap.set(4, 480)
 
 pygame.init()
 win = pygame.display.set_mode((200, 200))
 
 running = True
-
-
-# def mission():
-#
-#     unit = 'm'
-#     shelfHeight = 0.30
-#     shelfNumber = 3
-#     lenggth = 1
-#     fleg = False
-
 
 def getKey(keyName):
     ans = False
@@ -126,7 +116,6 @@ def getKeyboardInput():
 
     if getKey("t"): tello.takeoff()
 
-    # if getKey("m"): mission()
 
     return [lr, fb, ud, yv]
 
@@ -199,6 +188,8 @@ MOVEMENT = 'right'
 mytime = 0
 Rcount = 0
 Lcount = 0
+
+#Main Loop
 while True:
     mydata = 'none'
     vals = getKeyboardInput()
@@ -280,9 +271,7 @@ while True:
     if mydata == 'uprxs' or mydata == 'rightrxs' or mydata == 'leftrsx':
         pts = np.array([barcode.polygon], np.int32)
         pts = pts.reshape((-1, 1, 2))
-        # cv2.polylines(img, [pts], True, (255, 0, 255), 5)
         pts2 = barcode.rect
-        # cv2.putText(img, mydata, (pts2[0], pts2[1]), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255, 0, 255), 2)
         codeWidth = DetectQRcode(img)
         if codeWidth is not None:
             Distance = distanceFinder(focalLength, KNOWN_WIDTH, codeWidth)
@@ -302,7 +291,7 @@ while True:
                 if codeWidth is not None:
                     # print("not none")
                     Distance = distanceFinder(focalLength, KNOWN_WIDTH, codeWidth)
-                print("backin up??????????????")
+                
             while Distance > 80:
                 tello.send_rc_control(0, 20, 0, 0)
                 time.sleep(0.01)
@@ -318,7 +307,7 @@ while True:
                 if codeWidth is not None:
                     # print("not none")
                     Distance = distanceFinder(focalLength, KNOWN_WIDTH, codeWidth)
-                print("Movinggg up??????????????")
+                
 
     print("Shelf Numer: ", shelfnumber)
     if MOVEMENT == 'land' and MISSION == True:
@@ -342,9 +331,9 @@ while True:
     print("CODE: ",mydata)
     pts = np.array([barcode.polygon], np.int32)
     pts = pts.reshape((-1, 1, 2))
-    # cv2.polylines(img, [pts], True, (255, 0, 255), 5)
+
     pts2 = barcode.rect
-    # cv2.putText(img, mydata, (pts2[0], pts2[1]), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255, 0, 255), 2)
+
     codeWidth = DetectQRcode(img)
     if codeWidth is not None:
         Distance = distanceFinder(focalLength, KNOWN_WIDTH, codeWidth)
@@ -361,33 +350,17 @@ while True:
             wb.save('Rapidex Inventory.xls')
             rb = xlrd.open_workbook('Rapidex Inventory.xls')
             sheet = rb.sheet_by_index(0)
-        # print(mydata)
+        
 
         pts = np.array([barcode.polygon], np.int32)
         pts = pts.reshape((-1, 1, 2))
-        # cv2.polylines(img, [pts], True, (255, 0, 255), 5)
+       
         pts2 = barcode.rect
-        # cv2.putText(img, mydata, (pts2[0], pts2[1]), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255, 0, 255), 2)
+        
         codeWidth = DetectQRcode(img)
         if codeWidth is not None:
-            # # print("not none")
-            # Distance = distanceFinder(focalLength, KNOWN_WIDTH, codeWidth)
-            # # print(round(Distance, 2))
-            # cv2.putText(img, f"Distance: {round(Distance, 2)} Cm", (20, 20), fonts, 0.6, (CYAN), 2)
             cv2.putText(img, mydata, (pts2[0], pts2[1]), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255, 0, 255), 2)
-            # while Distance < 80:
-            #     tello.send_rc_control(0, -30, 0, 0)
-            #     myFrame = tello.get_frame_read().frame
-            #     img = cv2.resize(myFrame, (w, h))
-            #     codeWidth = DetectQRcode(img)
-            #     if codeWidth is not None:
-            #         # print("not none")
-            #         Distance = distanceFinder(focalLength, KNOWN_WIDTH, codeWidth)
-            #     print("backin up??????????????")
 
-            # cv2.putText(img, f"Distnace: {round(Distance, 2)} CM", (pts2[0], pts2[1]), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255, 0, 255), 2)
-            # betterLook.showText(img, f"Distnace: {round(Distance, 2)} CM", Pos, GOLD, int(Distance * 4.5))
-        # out.write(im)
 
     cv2.imshow('Result', img)
     cv2.waitKey(1)
